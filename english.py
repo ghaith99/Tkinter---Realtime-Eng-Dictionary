@@ -2,23 +2,36 @@ from tkinter import *
 from keyboard import *
 
 def find(sv):
-    for l in lines:
-        if len(sv.get())==2: return 
-        if(l.split("@")[0].strip().lower() == sv.get().lower()):
-            root.clipboard_clear()
-            root.clipboard_append(l.split("@")[1].strip())
-            answer.set(l.split("@")[1].strip())
-            break
+    if len(sv.get())==2: return 
+    root.clipboard_clear()
+    try:
+        root.clipboard_append(words[sv.get().lower()])
+        answer.set(words[sv.get().lower()])
+    except:
+        pass    
 
 buff = "" 
 def callback(e):
     global buff
-    if e.name == 'esc':
+    if e.name == 'esc' or e.name == 'enter':
         buff = ''
         sv.set(buff)
+        answer.set(buff)
     elif e.name == 'backspace':
         buff  = buff[:-1]
         sv.set(buff)
+    elif e.name == '.':
+        send('ctrl+a')
+        for i in range(15):
+            send(14);
+        write(words[sv.get().lower()]+'\n')
+        buff = ''
+        answer.set(buff)
+    elif e.name == ',':
+        send('ctrl+a')
+        write(words[sv.get().lower()])       
+        buff = ''
+        answer.set(buff)
     elif e.name in 'qwertyuiopasdfghjklzxcvbnm':
         buff += e.name
         sv.set(buff) #triggers the find callback since SV variable is being traced
@@ -30,6 +43,7 @@ lines = []
 
 with open("C:\\Users\\pc\\Desktop\\Eng.txt", encoding='utf-8', mode='r') as f:
     lines = f.readlines()
+    words = {m.strip():n.strip() for m,n in [z.split("@") for z  in lines]}
 
 canvas1 = Canvas(root, width = 200, height = 200)
 canvas1.pack()
